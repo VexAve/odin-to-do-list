@@ -2,7 +2,7 @@ import "./styles.css";
 import { Task, Project, ProjectsList } from "./to-do.js";
 import editIcon from "./images/pencil-outline.svg";
 import deleteIcon from "./images/trash-can-outline.svg";
-import { format } from "date-fns";
+import { format, parse, formatISO } from "date-fns";
 
 const projectsList = new ProjectsList();
 
@@ -149,24 +149,42 @@ const createTask = (title, description, dueDate, priority) => {
 
   const editBtn = document.createElement("button");
   editBtn.addEventListener("click", () => {
-    // taskTitleInput.value = taskTitle.textContent;
-    // taskDescriptionInput.value = descriptionParagraph.textContent;
-    // priorityInput.value = priority;
-    // addNewProjectModal.showModal();
-    // cancelProject.addEventListener(
-    //   "click",
-    //   () => {
-    //     addNewProjectModal.close();
-    //   },
-    //   { once: true }
-    // );
-    // confirmProject.addEventListener(
-    //   "click",
-    //   () => {
-    //     addNewProjectModal.close();
-    //   },
-    //   { once: true }
-    // );
+    taskTitleInput.value = titleHeading.textContent;
+    taskDescriptionInput.value = descriptionParagraph.textContent;
+    dueDateInput.value = dueDateSpan.textContent
+      ? formatISO(parse(dueDateSpan.textContent, "Pp", new Date())).slice(0, 16)
+      : "";
+    priorityInput.value =
+      prioritySpan.textContent[0].toLowerCase() +
+      prioritySpan.textContent.slice(1);
+    addNewTaskModal.showModal();
+    cancelTask.addEventListener(
+      "click",
+      () => {
+        addNewTaskModal.close();
+      },
+      { once: true }
+    );
+    confirmTask.addEventListener(
+      "click",
+      () => {
+        const newDueDate = dueDateInput.value ? format(new Date(dueDateInput.value), "Pp") : "";
+        task.edit(
+          taskTitleInput.value,
+          taskDescriptionInput.value,
+          newDueDate,
+          priorityInput.value
+        );
+        titleHeading.textContent = taskTitleInput.value;
+        descriptionParagraph.textContent = taskDescriptionInput.value;
+        dueDateSpan.textContent = newDueDate;
+        prioritySpan.textContent =
+          priorityInput.value[0].toUpperCase() + priorityInput.value.slice(1);
+        prioritySpan.className = `priority ${priorityInput.value}`;
+        addNewTaskModal.close();
+      },
+      { once: true }
+    );
   });
   editBtn.className = "icon-btn";
   const editBtnImg = document.createElement("img");
@@ -195,6 +213,9 @@ const createTask = (title, description, dueDate, priority) => {
 const addNewTaskBtn = document.getElementById("add-new-task");
 addNewTaskBtn.addEventListener("click", () => {
   taskTitleInput.value = "";
+  taskDescriptionInput.value = "";
+  dueDateInput.value = "";
+  priorityInput.value = "low";
   addNewTaskModal.showModal();
   cancelTask.addEventListener(
     "click",
@@ -209,10 +230,11 @@ addNewTaskBtn.addEventListener("click", () => {
       createTask(
         taskTitleInput.value,
         taskDescriptionInput.value,
-        format(Date(dueDateInput.value), "Pp"),
+        dueDateInput.value ? format(new Date(dueDateInput.value), "Pp") : "",
         priorityInput.value
       );
       addNewTaskModal.close();
+      console.log(dueDateInput.value);
     },
     { once: true }
   );
