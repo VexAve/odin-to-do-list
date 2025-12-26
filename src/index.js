@@ -13,23 +13,20 @@ const projectTitleInput = document.getElementById("project-title-input");
 const cancelProject = document.getElementById("cancel-project");
 const confirmProject = document.getElementById("confirm-project");
 
-const createProject = (title) => {
-  const project = new Project(title);
-  projectsList.addProject(project);
-
+const createProjectEl = (project) => {
   const projectEl = document.createElement("div");
   projectEl.id = project.id;
   projectEl.className = "project";
   projectsSection.insertBefore(projectEl, addNewProjectBtn);
   projectEl.addEventListener("click", () => selectProject(project.id));
 
-  const taskTitle = document.createElement("div");
-  taskTitle.textContent = title;
+  const titleHeading = document.createElement("div");
+  titleHeading.textContent = project.title;
 
   const editBtn = document.createElement("button");
   editBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    projectTitleInput.value = taskTitle.textContent;
+    projectTitleInput.value = titleHeading.textContent;
     addNewProjectModal.showModal();
     cancelProject.addEventListener(
       "click",
@@ -42,8 +39,9 @@ const createProject = (title) => {
       "click",
       () => {
         project.edit(projectTitleInput.value);
-        taskTitle.textContent = projectTitleInput.value;
+        titleHeading.textContent = projectTitleInput.value;
         addNewProjectModal.close();
+        localStorage.setItem("projectsList", JSON.stringify(projectsList));
       },
       { once: true }
     );
@@ -69,9 +67,16 @@ const createProject = (title) => {
   deleteBtnImg.src = deleteIcon;
   deleteBtn.appendChild(deleteBtnImg);
 
-  projectEl.appendChild(taskTitle);
+  projectEl.appendChild(titleHeading);
   projectEl.appendChild(editBtn);
   projectEl.appendChild(deleteBtn);
+};
+
+const createProject = (title) => {
+  const project = new Project(title);
+  projectsList.addProject(project);
+
+  createProjectEl(project);
 };
 createProject("Default");
 
@@ -90,6 +95,7 @@ addNewProjectBtn.addEventListener("click", () => {
     () => {
       createProject(projectTitleInput.value);
       addNewProjectModal.close();
+      localStorage.setItem("projectsList", JSON.stringify(projectsList));
     },
     { once: true }
   );
@@ -102,9 +108,15 @@ const selectProject = (id) => {
   selectedProjectEl?.classList.remove("selected");
   selectedProjectEl = document.getElementById(id);
   selectedProjectEl.classList.add("selected");
-  tasksHeading.textContent = `${
-    projectsList.findProject(selectedProjectEl.id).title
-  } Tasks`;
+
+  const selectedProject = projectsList.findProject(selectedProjectEl.id);
+  tasksHeading.textContent = `${selectedProject.title} Tasks`;
+
+  const oldTaskEls = document.querySelectorAll(".task");
+  oldTaskEls.forEach((el) => el.remove());
+  selectedProject.tasksList.forEach((task) =>
+    createTaskEl(task, selectedProject)
+  );
 };
 selectProject(projectsList.projectsList[0].id);
 
@@ -117,11 +129,7 @@ const priorityInput = document.getElementById("priority-input");
 const cancelTask = document.getElementById("cancel-task");
 const confirmTask = document.getElementById("confirm-task");
 
-const createTask = (title, description, dueDate, priority) => {
-  const task = new Task(title, description, dueDate, priority);
-  const project = projectsList.findProject(selectedProjectEl.id);
-  project.addTask(task);
-
+const createTaskEl = (task, project) => {
   const taskEl = document.createElement("div");
   tasksSection.appendChild(taskEl);
   taskEl.className = "task";
@@ -129,22 +137,24 @@ const createTask = (title, description, dueDate, priority) => {
   const topDiv = document.createElement("div");
   const checkboxInput = document.createElement("input");
   checkboxInput.type = "checkbox";
+  checkboxInput.checked = task.done;
   const titleHeading = document.createElement("h2");
-  titleHeading.textContent = title;
+  titleHeading.textContent = task.title;
   const dueDateSpan = document.createElement("span");
-  dueDateSpan.textContent = dueDate;
+  dueDateSpan.textContent = task.dueDate;
   topDiv.appendChild(checkboxInput);
   topDiv.appendChild(titleHeading);
   topDiv.appendChild(dueDateSpan);
 
   const descriptionParagraph = document.createElement("p");
-  descriptionParagraph.textContent = description;
+  descriptionParagraph.textContent = task.description;
 
   const bottomDiv = document.createElement("div");
   const priorityDiv = document.createElement("div");
   const prioritySpan = document.createElement("span");
-  prioritySpan.textContent = priority[0].toUpperCase() + priority.slice(1);
-  prioritySpan.className = `priority ${priority}`;
+  prioritySpan.textContent =
+    task.priority[0].toUpperCase() + task.priority.slice(1);
+  prioritySpan.className = `priority ${task.priority}`;
   priorityDiv.appendChild(prioritySpan);
 
   const editBtn = document.createElement("button");
@@ -168,7 +178,9 @@ const createTask = (title, description, dueDate, priority) => {
     confirmTask.addEventListener(
       "click",
       () => {
-        const newDueDate = dueDateInput.value ? format(new Date(dueDateInput.value), "Pp") : "";
+        const newDueDate = dueDateInput.value
+          ? format(new Date(dueDateInput.value), "Pp")
+          : "";
         task.edit(
           taskTitleInput.value,
           taskDescriptionInput.value,
@@ -182,6 +194,8 @@ const createTask = (title, description, dueDate, priority) => {
           priorityInput.value[0].toUpperCase() + priorityInput.value.slice(1);
         prioritySpan.className = `priority ${priorityInput.value}`;
         addNewTaskModal.close();
+        localStorage.setItem("projectsList", JSON.stringify(projectsList));
+        console.log(localStorage.getItem("projectsList"));
       },
       { once: true }
     );
@@ -210,6 +224,14 @@ const createTask = (title, description, dueDate, priority) => {
   taskEl.appendChild(bottomDiv);
 };
 
+const createTask = (title, description, dueDate, priority, done = false) => {
+  const task = new Task(title, description, dueDate, priority, done);
+  const project = projectsList.findProject(selectedProjectEl.id);
+  project.addTask(task);
+
+  createTaskEl(task, project);
+};
+
 const addNewTaskBtn = document.getElementById("add-new-task");
 addNewTaskBtn.addEventListener("click", () => {
   taskTitleInput.value = "";
@@ -234,7 +256,7 @@ addNewTaskBtn.addEventListener("click", () => {
         priorityInput.value
       );
       addNewTaskModal.close();
-      console.log(dueDateInput.value);
+      localStorage.setItem("projectsList", JSON.stringify(projectsList));
     },
     { once: true }
   );
