@@ -41,7 +41,10 @@ const createProjectEl = (project) => {
         project.edit(projectTitleInput.value);
         titleHeading.textContent = projectTitleInput.value;
         addNewProjectModal.close();
-        localStorage.setItem("projectsList", JSON.stringify(projectsList));
+        localStorage.setItem(
+          "projectsList",
+          JSON.stringify(projectsList.projectsList)
+        );
       },
       { once: true }
     );
@@ -72,13 +75,12 @@ const createProjectEl = (project) => {
   projectEl.appendChild(deleteBtn);
 };
 
-const createProject = (title) => {
-  const project = new Project(title);
+const createProject = (title, id = "") => {
+  const project = new Project(title, id);
   projectsList.addProject(project);
 
   createProjectEl(project);
 };
-createProject("Default");
 
 addNewProjectBtn.addEventListener("click", () => {
   projectTitleInput.value = "";
@@ -95,7 +97,10 @@ addNewProjectBtn.addEventListener("click", () => {
     () => {
       createProject(projectTitleInput.value);
       addNewProjectModal.close();
-      localStorage.setItem("projectsList", JSON.stringify(projectsList));
+      localStorage.setItem(
+        "projectsList",
+        JSON.stringify(projectsList.projectsList)
+      );
     },
     { once: true }
   );
@@ -105,6 +110,8 @@ const tasksHeading = document.getElementById("tasks-heading");
 
 let selectedProjectEl = null;
 const selectProject = (id) => {
+  localStorage.setItem("selectedProjectId", id);
+
   selectedProjectEl?.classList.remove("selected");
   selectedProjectEl = document.getElementById(id);
   selectedProjectEl.classList.add("selected");
@@ -118,7 +125,6 @@ const selectProject = (id) => {
     createTaskEl(task, selectedProject)
   );
 };
-selectProject(projectsList.projectsList[0].id);
 
 const tasksSection = document.getElementById("tasks-section");
 const addNewTaskModal = document.getElementById("add-new-task-modal");
@@ -194,7 +200,10 @@ const createTaskEl = (task, project) => {
           priorityInput.value[0].toUpperCase() + priorityInput.value.slice(1);
         prioritySpan.className = `priority ${priorityInput.value}`;
         addNewTaskModal.close();
-        localStorage.setItem("projectsList", JSON.stringify(projectsList));
+        localStorage.setItem(
+          "projectsList",
+          JSON.stringify(projectsList.projectsList)
+        );
         console.log(localStorage.getItem("projectsList"));
       },
       { once: true }
@@ -224,8 +233,15 @@ const createTaskEl = (task, project) => {
   taskEl.appendChild(bottomDiv);
 };
 
-const createTask = (title, description, dueDate, priority, done = false) => {
-  const task = new Task(title, description, dueDate, priority, done);
+const createTask = (
+  title,
+  description,
+  dueDate,
+  priority,
+  done = false,
+  id = ""
+) => {
+  const task = new Task(title, description, dueDate, priority, done, id);
   const project = projectsList.findProject(selectedProjectEl.id);
   project.addTask(task);
 
@@ -256,8 +272,42 @@ addNewTaskBtn.addEventListener("click", () => {
         priorityInput.value
       );
       addNewTaskModal.close();
-      localStorage.setItem("projectsList", JSON.stringify(projectsList));
+      localStorage.setItem(
+        "projectsList",
+        JSON.stringify(projectsList.projectsList)
+      );
     },
     { once: true }
   );
 });
+
+if (localStorage.getItem("projectsList")) {
+  const temp = localStorage.getItem("selectedProjectId");
+  for (const projectJSON of JSON.parse(localStorage.getItem("projectsList"))) {
+    createProject(projectJSON.title, projectJSON.id);
+    selectProject(projectsList.projectsList.at(-1).id);
+    for (const taskJSON of projectJSON.tasksList) {
+      createTask(
+        taskJSON.title,
+        taskJSON.description,
+        taskJSON.dueDate,
+        taskJSON.priority,
+        taskJSON.done,
+        taskJSON.id
+      );
+    }
+  }
+  localStorage.setItem("selectedProjectId", temp);
+} else {
+  createProject("Default");
+  localStorage.setItem(
+    "projectsList",
+    JSON.stringify(projectsList.projectsList)
+  );
+}
+
+if (localStorage.getItem("selectedProjectId")) {
+  selectProject(localStorage.getItem("selectedProjectId"));
+} else {
+  selectProject(projectsList.projectsList[0].id);
+}

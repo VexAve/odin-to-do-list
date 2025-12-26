@@ -1,6 +1,6 @@
 class Task {
-  constructor(title, description, dueDate, priority, done = false) {
-    this.id = crypto.randomUUID();
+  constructor(title, description, dueDate, priority, done = false, id = "") {
+    this.id = id || crypto.randomUUID();
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
@@ -25,8 +25,8 @@ class Task {
 }
 
 class Project {
-  constructor(title) {
-    this.id = crypto.randomUUID();
+  constructor(title, id = "") {
+    this.id = id || crypto.randomUUID();
     this.title = title;
     this.tasksList = [];
   }
