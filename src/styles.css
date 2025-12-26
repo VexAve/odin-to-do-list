@@ -1,0 +1,183 @@
+* {
+  font-family: sans-serif;
+}
+
+#projects-section {
+  background-color: darkorange;
+  padding: 30px 10%;
+  height: 100vh;
+}
+
+#tasks-section {
+  padding: 30px 10%;
+  background-color: orange;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+}
+
+h1 {
+  color: white;
+  text-shadow: 2px 2px 0 black;
+  margin: 0;
+  padding-bottom: 20px;
+}
+
+.project {
+  min-height: 50px;
+  background-color: beige;
+  border: 2px solid brown;
+  border-radius: 10px;
+  box-shadow: 2px 2px 0 black;
+  margin-bottom: 20px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 20px 20px;
+  gap: 10px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.project:hover {
+  padding: 8px;
+  border: 4px solid brown;
+}
+
+.project.selected {
+  background-color: palevioletred;
+}
+
+.project > div {
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.icon-btn {
+  visibility: hidden;
+  padding: 0;
+}
+
+.project:hover > .icon-btn > img {
+  visibility: visible;
+}
+
+#add-new-project {
+  width: 100%;
+  background-color: transparent;
+  color: brown;
+  outline: 2px dashed brown;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#add-new-project:hover {
+  color: brown;
+  font-weight: 700;
+  outline: 3px dashed brown;
+}
+
+dialog:modal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+dialog > input {
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+dialog > div {
+  display: flex;
+  justify-content: right;
+  gap: 10px;
+}
+
+.cancel,
+.confirm {
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+}
+
+.cancel {
+  background-color: red;
+}
+
+.confirm {
+  background-color: green;
+}
+
+#add-new-task {
+  width: 50px;
+  height: 50px;
+  background-color: skyblue;
+  font-size: xx-large;
+  border: 2px solid cornflowerblue;
+  border-radius: 5px;
+  box-shadow: 2px 2px 0 black;
+  position: fixed;
+  right: 50px;
+  bottom: 50px;
+}
+
+#add-new-task:hover {
+  border: 4px solid cornflowerblue;
+}
+
+.task {
+  background-color: beige;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+}
+
+.task > div:first-child {
+  padding: 0;
+  display: grid;
+  grid-template-columns: 30px 1fr 100px;
+  align-items: center;
+}
+
+.task > div > h2 {
+  margin: 0;
+}
+
+.task > div:last-child {
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 20px 20px;
+  gap: 10px;
+  align-items: center;
+}
+
+.task > div > .icon-btn > img {
+  visibility: visible;
+  width: 20px;
+  height: 20px;
+}
+
+.priority {
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.high {
+  background-color: orangered;
+}
+
+.medium {
+  background-color: gold;
+}
+
+.low {
+  background-color: yellowgreen;
+}

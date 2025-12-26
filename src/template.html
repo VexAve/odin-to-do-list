@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List</title>
+  </head>
+  <body>
+    <aside id="projects-section">
+      <h1>Projects</h1>
+      <button id="add-new-project">Add New Project</button>
+    </aside>
+    <main id="tasks-section">
+      <h1 id="tasks-heading">Default Tasks</h1>
+      <button id="add-new-task">+</button>
+    </main>
+    <dialog id="add-new-project-modal">
+      <label for="project-title-input">Project Title:</label>
+      <input type="text" id="project-title-input" maxlength="30" />
+      <div>
+        <button id="cancel-project" class="cancel">Cancel</button>
+        <button id="confirm-project" class="confirm">Confirm</button>
+      </div>
+    </dialog>
+    <dialog id="add-new-task-modal">
+      <label for="task-title-input">Task Title:</label>
+      <input type="text" id="task-title-input" maxlength="30" />
+      <label for="task-description-input">Task Description:</label>
+      <textarea id="task-description-input"></textarea>
+      <label for="due-date-input">Due Date:</label>
+      <input type="datetime-local" id="due-date-input" />
+      <label for="priority-input">Priority:</label>
+      <select id="priority-input">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+      <div>
+        <button id="cancel-task" class="cancel">Cancel</button>
+        <button id="confirm-task" class="confirm">Confirm</button>
+      </div>
+    </dialog>
+  </body>
+</html>
